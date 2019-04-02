@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Notifs</string>
+    <string name="time">Time to Countdown: </string>
+    <string name="setCountDown">Set Countdown</string>
 </resources>
