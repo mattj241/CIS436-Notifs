@@ -1,5 +1,6 @@
 package com.android.london.notifs;
 
+import android.accessibilityservice.GestureDescription;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.os.Build;
@@ -98,13 +99,14 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         }
         else
         {
+            Integer input = Integer.parseInt(time.getText().toString());
             setCountdown.setEnabled(false);
             startCountdown.setEnabled(false);
             Toast.makeText(v.getContext(), "Countdown Started", Toast.LENGTH_SHORT)
                     .show();
             int highestNotif = Integer.parseInt(spinner.getSelectedItem().toString());
             String messageContent = message.getText().toString();
-            initiateCountdown(v, highestNotif, messageContent);
+            initiateCountdown(v, input,  highestNotif, messageContent);
         }
     }
 
@@ -139,18 +141,22 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         }
     }
 
-    private void initiateCountdown(final View v, int highestNotif, final String messageContent){
+    private void initiateCountdown(final View v, int input,  int highestNotif, final String messageContent){
         final List<Integer> notifs = getNotifParatmeters(highestNotif);
-        new CountDownTimer(highestNotif * 1000, 1000){
+
+        new CountDownTimer(input * 1000, 1000){
             @Override
             public void onTick(long millisUntilFinished) {
                 int secondsLeft = (int) (millisUntilFinished);
                 secondsLeft = secondsLeft / 1000;
+                final String notifText = secondsLeft > 1
+                        ? getString(R.string.notifText, secondsLeft)
+                        : getString(R.string.oneSecond);
                 if (notifs.contains(secondsLeft)){
                     NotificationCompat.Builder builder = new NotificationCompat.Builder(v.getContext(), "soleChannel")
                             .setSmallIcon(R.drawable.ic_notif)
-                            .setContentTitle("Counter Notification")
-                            .setContentText(String.format("%d seconds to countdown", secondsLeft))
+                            .setContentTitle(String.format("Countdown Notifier for %s", messageContent))
+                            .setContentText(notifText)
                             .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
                     NotificationManagerCompat notificationManager = NotificationManagerCompat.from(MainActivity.this);
@@ -163,7 +169,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
             public void onFinish() {
                 NotificationCompat.Builder builder = new NotificationCompat.Builder(v.getContext(), "soleChannel")
                         .setSmallIcon(R.drawable.ic_notif)
-                        .setContentTitle("Counter Notification")
+                        .setContentTitle(String.format("Countdown Notifier for %s", messageContent))
                         .setContentText(String.format("It's time for %s!", messageContent))
                         .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
