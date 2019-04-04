@@ -19,13 +19,19 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
+/*
+Author: Matthew London
+Prof: J.P. Baugh
+Class: CIS 436
+Date due: Roughly 4/7/2019
+* */
 public class MainActivity extends AppCompatActivity implements Button.OnClickListener{
 
     TextView time, message;
     Spinner spinner;
     Button setCountdown, startCountdown, reset;
-    private int[] notifPresets = {1, 5, 10, 20, 30, 60, 90};
-    Integer notificationId = 123456;
+    private int[] notifPresets = {1, 5, 10, 20, 30, 60, 90}; //Your requested notification time markers
+    Integer notificationId = 123456; //arbitrary notification channel ID
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +52,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         createNotificationChannel();
     }
 
+    //universal btn handler
     @Override
     public void onClick(View v){
         switch (v.getId())
@@ -63,6 +70,9 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         }
     }
 
+    //sanitises most program input:
+    //IF: time within requirements
+    //THEN: Populate spinner, enable and disable UI controls
     private void handleSet(View v){
         Integer input = null;
         try{
@@ -85,6 +95,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         }
     }
 
+    //Re-enables the user to enter a time
     private void handleReset(View v){
         reset.setVisibility(View.GONE);
         time.setEnabled(true);
@@ -92,6 +103,11 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         startCountdown.setEnabled(false);
     }
 
+    //Initiates countdown if there is a message present
+    //Restricts user to start the countdown until the running countdown finishes
+    //
+    //IF: Message is present and previous input valid
+    //THEN: Start Countdown
     private void handleStart(View v){
         if (message.getText().toString().isEmpty()){
             Toast.makeText(v.getContext(), "You should enter a message first :)", Toast.LENGTH_SHORT)
@@ -141,6 +157,9 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         }
     }
 
+    //Takes in all previously validated input, runs an Android OS timer,
+    // and checks on every tick (every second) if the time left is a notification marker.
+    // If it is, it sends a notification.
     private void initiateCountdown(final View v, int input,  int highestNotif, final String messageContent){
         final List<Integer> notifs = getNotifParatmeters(highestNotif);
 
@@ -150,8 +169,8 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
                 int secondsLeft = (int) (millisUntilFinished);
                 secondsLeft = secondsLeft / 1000;
                 final String notifText = secondsLeft > 1
-                        ? getString(R.string.notifText, secondsLeft)
-                        : getString(R.string.oneSecond);
+                        ? getString(R.string.notifText, secondsLeft, messageContent)
+                        : getString(R.string.oneSecond, messageContent);
                 if (notifs.contains(secondsLeft)){
                     NotificationCompat.Builder builder = new NotificationCompat.Builder(v.getContext(), "soleChannel")
                             .setSmallIcon(R.drawable.ic_notif)
@@ -182,6 +201,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         }.start();
     }
 
+    //Reconstructs the notification marker list for the countdown timer
     private List<Integer> getNotifParatmeters(int highestNotif){
         List<Integer> notifs = new ArrayList<>();
         for(Integer notif : notifPresets){

@@ -8,7 +8,7 @@
     <string name="reset">Reset</string>
     <string name="channel_name">Default</string>
     <string name="channel_description">Default</string>
-    <string name="notifText">%1$d seconds to countdown</string>
-    <string name="oneSecond">"1 second to countdown"</string>
+    <string name="notifText">%1$d seconds until %2$s</string>
+    <string name="oneSecond">1 second until %1$s</string>
 
 </resources>
