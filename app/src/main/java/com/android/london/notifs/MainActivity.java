@@ -114,7 +114,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
     private void populateSpinner(int selection){
         List<Integer> spinnerContents = new ArrayList<>();
         for(Integer integer : notifPresets){
-            if (selection >= integer){
+            if (selection > integer){
                 spinnerContents.add(integer);
             }
         }
